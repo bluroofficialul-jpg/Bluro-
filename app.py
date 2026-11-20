@@ -103,12 +103,21 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 
 <div class="top">
   <button class="ibtn" onclick="drw(1)">☰</button>
+  <div style="position:relative">
+    <button class="ibtn" id="mBtn" onclick="togMod()" style="width:auto;padding:0 12px;gap:6px;font-size:13px;font-weight:700"><span id="mLbl">Bluro 3.8</span><span style="font-size:10px;color:var(--mt)">⌄</span></button>
+    <div id="mMenu" style="display:none;position:fixed;top:56px;left:14px;width:235px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:6px;z-index:55;box-shadow:0 12px 30px rgba(0,0,0,.6)">
+      <div onclick="setMod('auto','Bluro Auto')" style="padding:10px 12px;border-radius:11px;cursor:pointer"><div style="font-size:13.5px;font-weight:600">Auto</div><div style="font-size:11.5px;color:var(--mt)">Adapts to your research</div></div>
+      <div onclick="setMod('fast','Bluro 3.0')" style="padding:10px 12px;border-radius:11px;cursor:pointer"><div style="font-size:13.5px;font-weight:600">Everyday Research</div><div style="font-size:11.5px;color:var(--mt)">Bluro 3.0 • Fast & direct</div></div>
+      <div onclick="setMod('deep','Bluro 3.8')" style="padding:10px 12px;border-radius:11px;cursor:pointer"><div style="font-size:13.5px;font-weight:600">Deeper Analysis</div><div style="font-size:11.5px;color:var(--mt)">Bluro 3.8 • Deep evidence</div></div>
+    </div>
+  </div>
   <div class="pill">
     <button class="tbtn act" id="bChat" onclick="tab('chat')">Chat</button>
     <button class="tbtn" id="bLib" onclick="tab('lib')">Science Library</button>
   </div>
   <button class="ibtn" onclick="newChat()">✎</button>
 </div>
+
 
 <div class="view act" id="vChat">
   <div class="hero" id="hero">
@@ -180,7 +189,10 @@ const CATS=[
 let chats=JSON.parse(localStorage.getItem('b_chats')||'[]'),cid=null,ctrl=null;
 let prefs=JSON.parse(localStorage.getItem('b_prefs')||'{"t":"Dark","d":"Evidence + Sources","e":false}');
 let user=JSON.parse(localStorage.getItem('b_user')||'null');
-let selImgB64='',selImgMime='image/jpeg';
+let selImgB64='',selImgMime='image/jpeg';let curTier='deep';
+function togMod(){const m=document.getElementById('mMenu');m.style.display=m.style.display==='block'?'none':'block';}
+function setMod(t,lbl){curTier=t;document.getElementById('mLbl').textContent=lbl;document.getElementById('mMenu').style.display='none';}
+
 
 function appPrefs(){
   document.body.className=prefs.t==='Light'?'light':(prefs.t==='OLED Black'?'oled':'');
@@ -334,7 +346,7 @@ def ask():
             contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
         except Exception as e:
             return jsonify({"direct_answer": f"Image error: {e}", "evidence": [], "sources": [], "confidence": "Error"}), 400
-        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
     cfg = types.GenerateContentConfig(
         system_instruction=SYSTEM_PROMPT,
         response_mime_type="application/json",
