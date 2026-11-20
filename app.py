@@ -266,4 +266,89 @@ function addAI(data){
   const ev=(data.evidence||[]).map(x=>`<li>${x}</li>`).join('');
   const sr=(data.sources||[]).join(' • ');
   c.innerHTML=`<div class="brow"><span class="btag">BLURO</span><span class="cbadge">${data.confidence||'Verified'}</span></div>
-  <div
+    <div class="dtxt">${data.direct_answer||data.error||'No response'}</div>
+  ${ev&&prefs.d!=='Concise Direct'?`<button class="etog" onclick="document.getElementById('${id}').classList.toggle('open')"><span>Show Evidence & Sources</span><span>▾</span></button>
+  <div class="ebox ${prefs.e?'open':''}" id="${id}"><ul>${ev}</ul><div class="srcs"><strong>Sources:</strong> ${sr}</div></div>`:''}`;
+  document.getElementById('feed').appendChild(c);
+}
+function sendOrStop(){if(ctrl){ctrl.abort();ctrl=null;return;}send();}
+async function send(){
+  const inp=document.getElementById('qin'),q=inp.value.trim();
+  if(!q&&!selImgB64)return;
+  const userTxt=q||(selImgB64?'[Image uploaded]':'');
+  document.getElementById('hero').style.display='none';addU(userTxt);
+  if(!cid){cid='c'+Date.now();chats.unshift({id:cid,t:userTxt.slice(0,40),m:[]});}
+  const ac=chats.find(x=>x.id===cid);ac.m.push({r:'u',t:userTxt});localStorage.setItem('b_chats',JSON.stringify(chats));
+  const b64=selImgB64,mime=selImgMime;
+  selImgB64='';document.getElementById('imgTag').textContent='';document.getElementById('galInp').value='';document.getElementById('camInp').value='';
+  inp.value='';const sb=document.getElementById('sbtn');sb.textContent='■';
+  const fd=document.getElementById('feed'),vc=document.getElementById('vChat');
+  const th=document.createElement('div');th.className='thk';
+  th.innerHTML='<div class="orb"></div><span style="font-size:13px;color:var(--mut)">Researching evidence...</span>';
+  fd.appendChild(th);vc.scrollTop=vc.scrollHeight;
+  ctrl=new AbortController();
+  try{
+    const res=await fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,image_base64:b64,image_mime:mime}),signal:ctrl.signal});
+    const data=await res.json();th.remove();addAI(data);ac.m.push({r:'a',d:data});localStorage.setItem('b_chats',JSON.stringify(chats));
+  }catch(e){th.remove();addAI({direct_answer:e.name==='AbortError'?'Generation stopped.':'Connection error.',evidence:[],sources:[],confidence:'Info'});}
+  ctrl=null;sb.textContent='↑';vc.scrollTop=vc.scrollHeight;
+}
+appPrefs();upUser();
+</script>
+</body>
+</html>'''
+
+@app.route("/")
+def home():
+    return render_template_string(HTML)
+
+@app.route("/icon.svg")
+def icon():
+    return Response(ICON_SVG, mimetype="image/svg+xml")
+
+@app.route("/manifest.json")
+def manifest():
+    return jsonify({
+        "name": "BLURO",
+        "short_name": "BLURO",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#08080a",
+        "theme_color": "#0052FF",
+        "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    })
+
+@app.route("/ask", methods=["POST"])
+def ask():
+    data = request.get_json() or {}
+    q = (data.get("question") or "").strip()
+    img_b64 = data.get("image_base64") or ""
+    img_mime = data.get("image_mime") or "image/jpeg"
+    if not q and not img_b64:
+        return jsonify({"error": "Empty"}), 400
+    prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
+    contents = [prompt_text]
+    if img_b64:
+        try:
+            img_bytes = base64.b64decode(img_b64)
+            contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
+        except Exception as e:
+            return jsonify({"direct_answer": f"Image error: {e}", "evidence": [], "sources": [], "confidence": "Error"}), 400
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    try:
+        res = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                response_mime_type="application/json",
+                temperature=0.3
+            )
+        )
+        return jsonify(json.loads(res.text))
+    except Exception as e:
+        return jsonify({"direct_answer": f"Error: {str(e)}", "evidence": [], "sources": [], "confidence": "Error"}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+      
