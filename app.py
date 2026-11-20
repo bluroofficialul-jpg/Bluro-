@@ -264,6 +264,7 @@ apPrefs();upUser();
 </script>
 </body>
 </html>'''
+import base64
 
 @app.route("/")
 def home():
@@ -275,25 +276,52 @@ def icon():
 
 @app.route("/manifest.json")
 def manifest():
-    return jsonify({"name":"BLURO","short_name":"BLURO","start_url":"/","display":"standalone","background_color":"#08080a","theme_color":"#0052FF","icons":[{"src":"/icon.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]})
+    return jsonify({
+        "name": "BLURO",
+        "short_name": "BLURO",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0b0e14",
+        "theme_color": "#0052FF",
+        "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    })
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    q = (request.get_json() or {}).get("question", "").strip()
-    if not q:
+    data = request.get_json() or {}
+    q = (data.get("question") or "").strip()
+    img_b64 = data.get("image_base64") or ""
+    img_mime = data.get("image_mime") or "image/jpeg"
+    if not q and not img_b64:
         return jsonify({"error": "Empty"}), 400
-    try:
-        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-        res = client.models.generate_content(
-            model="gemini-3.8-flash",
-            contents=q,
-            config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
-        )
-        return jsonify(json.loads(res.text))
-    except Exception as e:
-        return jsonify({"direct_answer": f"Error: {str(e)}", "evidence": [], "sources": [], "confidence": "Error"}), 500
+    prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
+    contents = [prompt_text]
+    if img_b64:
+        try:
+            img_bytes = base64.b64decode(img_b64)
+            contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
+        except Exception as e:
+            return jsonify({"direct_answer": f"Image error: {e}", "evidence": [], "sources": [], "confidence": "Error"}), 400
+    models = ["gemini-3.8-flash", "gemini-2.5-flash"]
+    last_err = ""
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    for m in models:
+        for _ in range(2):
+            try:
+                res = client.models.generate_content(
+                    model=m,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                        response_mime_type="application/json",
+                        temperature=0.3
+                    )
+                )
+                return jsonify(json.loads(res.text))
+            except Exception as e:
+                last_err = str(e)
+    return jsonify({"direct_answer": f"Error: {last_err}", "evidence": [], "sources": [], "confidence": "Error"}), 500
 
 if __name__ == "__main__":
-      app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-  
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
   
