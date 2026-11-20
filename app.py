@@ -352,13 +352,8 @@ def ask():
         response_mime_type="application/json",
         temperature=0.3
     )
-    try:
+        try:
         res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
         return jsonify(json.loads(res.text))
     except Exception as e:
         return jsonify({"direct_answer": f"Error: {str(e)}", "evidence": [], "sources": [], "confidence": "Error"}), 500
-      
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-  
