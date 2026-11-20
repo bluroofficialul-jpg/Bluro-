@@ -337,7 +337,7 @@ def ask():
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
     try:
         res = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.4-flash",
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
