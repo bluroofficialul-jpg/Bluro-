@@ -125,10 +125,15 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 <div class="view" id="vLib"><div class="lgrid" id="lgrid"></div></div>
 
 <div class="dock" id="dock">
-  <div class="ibox">
+    <div class="ibox">
+    <input type="file" id="imgInp" accept="image/*" style="display:none" onchange="onImgPick(this)">
+    <button type="button" class="ibtn" onclick="document.getElementById('imgInp').click()" title="Photo">📷</button>
     <input id="qin" placeholder="ask bluro" autocomplete="off" onkeypress="if(event.key==='Enter')sendOrStop()">
+    <span id="imgTag" style="font-size:11px;color:#5b93ff"></span>
+    <button type="button" class="ibtn" id="micBtn" onclick="toggleVoice()" title="Voice">🎤</button>
     <button class="sbtn" id="sbtn" onclick="sendOrStop()">↑</button>
   </div>
+  
 </div>
 
 <div class="modal" id="setM">
@@ -242,25 +247,45 @@ function addAI(data){
   <div class="ebox ${prefs.e?'open':''}" id="${id}"><ul>${ev}</ul><div class="srcs"><strong>Sources:</strong> ${sr}</div></div>`:''}`;
   document.getElementById('feed').appendChild(c);
 }
+let selImgB64='',selImgMime='image/jpeg';
+function onImgPick(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;
+  selImgMime=f.type||'image/jpeg';
+  const r=new FileReader();
+  r.onload=()=>{selImgB64=String(r.result||'').split(',')[1]||'';document.getElementById('imgTag').textContent='Photo';};
+  r.readAsDataURL(f);
+}
+function toggleVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Voice not supported');return;}
+  const rec=new SR();rec.lang='en-US';
+  rec.onresult=(e)=>{document.getElementById('qin').value=e.results[0][0].transcript||'';};
+  rec.start();
+}
 function sendOrStop(){if(ctrl){ctrl.abort();ctrl=null;return;}send();}
 async function send(){
-  const inp=document.getElementById('qin'),q=inp.value.trim();if(!q)return;
-  document.getElementById('hero').style.display='none';addU(q);
-  if(!cid){cid='c'+Date.now();chats.unshift({id:cid,t:q.slice(0,40),m:[]});}
-  const ac=chats.find(x=>x.id===cid);ac.m.push({r:'u',t:q});localStorage.setItem('b_chats',JSON.stringify(chats));
+  const inp=document.getElementById('qin'),q=inp.value.trim();
+  if(!q&&!selImgB64)return;
+  const userTxt=q||(selImgB64?'[Image uploaded]':'');
+  document.getElementById('hero').style.display='none';addU(userTxt);
+  if(!cid){cid='c'+Date.now();chats.unshift({id:cid,t:userTxt.slice(0,40),m:[]});}
+  const ac=chats.find(x=>x.id===cid);ac.m.push({r:'u',t:userTxt});localStorage.setItem('b_chats',JSON.stringify(chats));
+  const b64=selImgB64,mime=selImgMime;
+  selImgB64='';document.getElementById('imgTag').textContent='';document.getElementById('imgInp').value='';
   inp.value='';const sb=document.getElementById('sbtn');sb.textContent='■';
   const fd=document.getElementById('feed'),vc=document.getElementById('vChat');
   const th=document.createElement('div');th.className='thk';
-  th.innerHTML='<div class="orb"></div><span style="font-size:13px;color:var(--mt)">Researching evidence...</span>';
+  th.innerHTML='<div class="orb"></div><span style="font-size:13px;color:var(--mut)">Researching evidence...</span>';
   fd.appendChild(th);vc.scrollTop=vc.scrollHeight;
   ctrl=new AbortController();
   try{
-    const res=await fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q}),signal:ctrl.signal});
+    const res=await fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,image_base64:b64,image_mime:mime}),signal:ctrl.signal});
     const data=await res.json();th.remove();addAI(data);ac.m.push({r:'a',d:data});localStorage.setItem('b_chats',JSON.stringify(chats));
-  }catch(e){th.remove();addAI({direct_answer:e.name==='AbortError'?'Generation stopped.':'Connection error.',confidence:'Info'});}
+  }catch(e){th.remove();addAI({direct_answer:e.name==='AbortError'?'Generation stopped.':'Connection error.',evidence:[],sources:[],confidence:'Info'});}
   ctrl=null;sb.textContent='↑';vc.scrollTop=vc.scrollHeight;
 }
-apPrefs();upUser();
+appPrefs();upUser();
+
 </script>
 </body>
 </html>'''
