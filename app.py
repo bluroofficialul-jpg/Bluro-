@@ -351,6 +351,5 @@ def ask():
         system_instruction=SYSTEM_PROMPT,
         response_mime_type="application/json",
         temperature=0.3
-    )
-      res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
+    )res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
     return jsonify(json.loads(res.text))
