@@ -125,17 +125,20 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
 <div class="view" id="vLib"><div class="lgrid" id="lgrid"></div></div>
 
 <div class="dock" id="dock">
-    <div class="ibox">
-    <input type="file" id="imgInp" accept="image/*" style="display:none" onchange="onImgPick(this)">
-    <button type="button" class="ibtn" onclick="document.getElementById('imgInp').click()" title="Photo">📷</button>
+  <div class="ibox">
+    <input type="file" id="galInp" accept="image/*" style="display:none" onchange="onImgPick(this)">
+    <input type="file" id="camInp" accept="image/*" capture="environment" style="display:none" onchange="onImgPick(this)">
+    <button type="button" class="ibtn" onclick="togPlus()" title="Add"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
     <input id="qin" placeholder="ask bluro" autocomplete="off" onkeypress="if(event.key==='Enter')sendOrStop()">
-    <span id="imgTag" style="font-size:11px;color:#5b93ff"></span>
-    <button type="button" class="ibtn" id="micBtn" onclick="toggleVoice()" title="Voice">🎤</button>
+    <span id="imgTag" style="font-size:11px;color:#5b93ff;white-space:nowrap"></span>
+    <button type="button" class="ibtn" id="micBtn" onclick="toggleVoice()" title="Voice"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></button>
     <button class="sbtn" id="sbtn" onclick="sendOrStop()">↑</button>
   </div>
+  <div id="plusSheet" style="display:none;margin-top:10px;padding:14px;background:var(--card);border:1px solid var(--bdr);border-radius:20px;gap:12px">
+    <button type="button" onclick="togPlus();document.getElementById('galInp').click()" style="flex:1;padding:16px 10px;background:var(--bg);border:1px solid var(--bdr);border-radius:16px;color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Photos</span></button>
+    <button type="button" onclick="togPlus();document.getElementById('camInp').click()" style="flex:1;padding:16px 10px;background:var(--bg);border:1px solid var(--bdr);border-radius:16px;color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;cursor:pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><span>Camera</span></button>
+  </div>
   
-</div>
-
 <div class="modal" id="setM">
   <div class="mtop"><button class="ibtn" onclick="closeM('setM')">←</button><h2>Settings</h2></div>
   <div class="mbody">
@@ -247,6 +250,8 @@ function addAI(data){
   <div class="ebox ${prefs.e?'open':''}" id="${id}"><ul>${ev}</ul><div class="srcs"><strong>Sources:</strong> ${sr}</div></div>`:''}`;
   document.getElementById('feed').appendChild(c);
 }
+function togPlus(){const p=document.getElementById('plusSheet');p.style.display=p.style.display==='flex'?'none':'flex';}
+
 let selImgB64='',selImgMime='image/jpeg';
 function onImgPick(inp){
   const f=inp.files&&inp.files[0];if(!f)return;
