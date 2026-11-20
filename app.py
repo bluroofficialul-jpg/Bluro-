@@ -352,25 +352,12 @@ def ask():
         response_mime_type="application/json",
         temperature=0.3
     )
-    last_err = ""
-    for m_name in ["gemini-2.8-flash", "gemini-3.8-flash", "gemini-3.0-flash", "gemini-2.5-flash"]:
-        try:
-            res = client.models.generate_content(model=m_name, contents=contents, config=cfg)
-            return jsonify(json.loads(res.text))
-        except Exception as e:
-            last_err = str(e)
-            if any(x in last_err for x in ["404", "NOT_FOUND", "503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED"]):
-                          
-                continue
-            return jsonify({"direct_answer": f"Error: {last_err}", "evidence": [], "sources": [], "confidence": "Error"}), 500
     try:
-        for m in client.models.list():
-            if "flash" in (m.name or "").lower() and "image" not in (m.name or "").lower() and "audio" not in (m.name or "").lower():
-                res = client.models.generate_content(model=m.name, contents=contents, config=cfg)
-                return jsonify(json.loads(res.text))
+        res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
+        return jsonify(json.loads(res.text))
     except Exception as e:
-        last_err = str(e)
-    return jsonify({"direct_answer": f"Error: {last_err}", "evidence": [], "sources": [], "confidence": "Error"}), 500
+        return jsonify({"direct_answer": f"Error: {str(e)}", "evidence": [], "sources": [], "confidence": "Error"}), 500
+      
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
