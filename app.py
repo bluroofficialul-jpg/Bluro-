@@ -359,7 +359,7 @@ def ask():
             return jsonify(json.loads(res.text))
         except Exception as e:
             last_err = str(e)
-                        if any(x in last_err for x in ["404", "NOT_FOUND", "503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED"]):
+            if any(x in last_err for x in ["404", "NOT_FOUND", "503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED"]):
                           
                 continue
             return jsonify({"direct_answer": f"Error: {last_err}", "evidence": [], "sources": [], "confidence": "Error"}), 500
