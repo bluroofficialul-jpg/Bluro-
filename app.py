@@ -285,7 +285,7 @@ def ask():
         if img_b64:
             img_bytes = base64.b64decode(img_b64)
             contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
-             client = genai.Client(api_key=api_key, http_options={"timeout": 20000})
+            client = genai.Client(api_key=api_key, http_options={"timeout": 20000})
           
         cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
         res = None
