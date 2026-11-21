@@ -287,28 +287,23 @@ def ask():
         if img_b64:
             img_bytes = base64.b64decode(img_b64)
             contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
-        client = genai.Client(api_key=api_key, http_options={"timeout": 20000})
-          
+        client = genai.Client(api_key=api_key, http_options={"timeout": 12000, "retry_options": {"attempts": 1}})
         cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
         res = None
-        last_err = ""
-        for m in ["gemini-3.8-flash", "gemini-3.8-flash-lite", "gemini-3.8-flash"]:
+        for m in ["gemini-3.8-flash-lite", "gemini-3.8-flash"]:
             try:
                 res = client.models.generate_content(model=m, contents=contents, config=cfg)
                 if res and res.text:
                     break
-            except Exception as me:
-                last_err = str(me)
+            except Exception:
                 continue
         if not res or not res.text:
-            return jsonify({"direct_answer": f"Notice: {last_err}", "evidence": [], "sources": [], "confidence": "Notice"})
+            return jsonify({"direct_answer": "High traffic on research servers right now. Please tap retry once.", "evidence": [], "sources": [], "confidence": "Retry"})
         raw = res.text.strip()
         if raw.startswith("```"):
             raw = raw.strip("`").replace("json\n", "", 1).strip()
         return jsonify(json.loads(raw))
-    except Exception as e:
-        return jsonify({"direct_answer": f"API Notice: {str(e)}", "evidence": [], "sources": [], "confidence": "Notice"})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-  
+    except Exception:
+        return jsonify({"direct_answer": "Connection interrupted. Please tap retry once.", "evidence": [], "sources": [], "confidence": "Retry"})
+    if __name__ == "__main__":
+      app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
