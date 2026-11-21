@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 SYSTEM_PROMPT = """You are BLURO, an objective AI science research assistant.
 Answer scientific questions with direct evidence, verified sources, and clear confidence metrics.
-Never mention Gemini, Google, or any underlying AI provider. You are strictly BLURO.
+Never mention Gemini, Google, or any underlying AI provider. You are strictly BLURO.Always reply in the user's language (English, Bengali, Hindi, etc.).
 Always respond in valid JSON with this exact schema:
 {
   "direct_answer": "Clear, rigorous, evidence-based scientific answer",
@@ -297,7 +297,7 @@ def ask():
           "temperature": 0.3
         }).encode("utf-8")
         req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions", data=payload, headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json", "User-Agent": "BLURO/1.0"})
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:
           g_res = json.loads(resp.read().decode("utf-8"))
           raw = g_res["choices"][0]["message"]["content"].strip()
           return jsonify(json.loads(raw))
