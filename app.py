@@ -32,8 +32,8 @@ HTML = """<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-#splash{position:fixed;inset:0;background:#0047CC;z-index:999;display:flex;align-items:center;justify-content:center;transition:opacity 0.35s ease;pointer-events:none}
-#splash.hide{opacity:0;visibility:hidden}
+#splash{position:fixed;inset:0;background:#0047CC;z-index:999;display:flex;align-items:center;justify-content:center;animation:splashOut 0.3s ease 0.7s forwards;pointer-events:none}
+@keyframes splashOut{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}100%{opacity:0;visibility:hidden;display:none}}
 .slogo{width:130px;height:130px;object-fit:contain}
 
 header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bdr);gap:8px}
@@ -193,14 +193,10 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 </div>
 
 <script>
-setTimeout(function() {
-  var sp = document.getElementById('splash');
-  if (sp) sp.classList.add('hide');
-}, 700);
-
 var chats = [];
 try { chats = JSON.parse(localStorage.getItem('b_chats') || '[]'); } catch (e) { chats = []; }
 var cid = null, selImgB64 = '', selImgMime = 'image/jpeg', selDataUrl = '', ctrl = null, lastQ = '';
+
 function toast(m) {
   var t = document.getElementById('toast');
   t.textContent = m;
