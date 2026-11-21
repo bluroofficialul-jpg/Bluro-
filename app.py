@@ -1,5 +1,5 @@
 import os, json, base64
-from flask import Flask, request, jsonify, render_template_string, Response
+from flask import Flask, request, jsonify, render_template_string, send_from_directory
 from google import genai
 from google.genai import types
 
@@ -16,19 +16,14 @@ Always respond in valid JSON with this exact schema:
   "confidence": "High (Peer-Reviewed Consensus)"
 }"""
 
-ICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0047CC"/>
-  <path d="M172 120h108c54 0 92 32 92 78 0 36-22 62-56 72 44 10 72 42 72 86 0 56-44 92-108 92H172c-12 0-20-8-20-20V256c32 34 86 52 148 52 34 0 58 14 58 38 0 26-22 42-56 42h-86V312c-26-8-46-22-64-42v122h-20V140c0-12 8-20 20-20zm44 56v66c24 22 64 34 108 34 26 0 44-14 44-36 0-24-20-40-52-40h-100v-24z" fill="#ffffff"/>
-</svg>"""
-
 HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#000000">
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
+<meta name="theme-color" content="#0047CC">
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
 <link rel="manifest" href="/manifest.json">
 <title>BLURO</title>
 <style>
@@ -37,10 +32,10 @@ HTML = """<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-#splash{position:fixed;inset:0;background:#000000;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity 0.45s ease,visibility 0.45s}
-#splash.hide{opacity:0;visibility:hidden}
-.slogo{width:76px;height:76px;border-radius:20px;box-shadow:0 12px 36px rgba(0,71,204,0.45);animation:popIn 0.6s cubic-bezier(0.16,1,0.3,1)}
-@keyframes popIn{0%{transform:scale(0.82);opacity:0}100%{transform:scale(1);opacity:1}}
+#splash{position:fixed;inset:0;background:#0047CC;z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeSplash 0.35s ease 0.65s forwards;pointer-events:none}
+@keyframes fadeSplash{to{opacity:0;visibility:hidden}}
+.slogo{width:130px;height:130px;object-fit:contain;animation:popIn 0.5s cubic-bezier(0.16,1,0.3,1)}
+@keyframes popIn{0%{transform:scale(0.85);opacity:0}100%{transform:scale(1);opacity:1}}
 
 header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bdr);gap:8px}
 .ibtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0}
@@ -51,7 +46,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 
 main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 .hero{margin:auto;text-align:center;max-width:340px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.hero img{width:54px;height:54px;border-radius:15px}
+.hero img{width:56px;height:56px;border-radius:15px}
 .hero h1{font-size:24px;font-weight:700;letter-spacing:-0.4px}
 .hero p{font-size:13.5px;color:var(--mut);line-height:1.5}
 .chips{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:6px}
@@ -116,7 +111,7 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 <body>
 
 <div id="splash">
-  <img src="/icon.svg" class="slogo" alt="BLURO">
+  <img src="/logo.png" class="slogo" alt="BLURO">
 </div>
 <div id="toast">Copied</div>
 
@@ -137,7 +132,7 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 
 <main id="vChat">
   <div class="hero" id="hero">
-    <img src="/icon.svg" alt="BLURO">
+    <img src="/logo.png" alt="BLURO">
     <h1>Ask BLURO</h1>
     <p>Evidence-backed research assistant for astrophysics, cosmology, and science.</p>
     <div class="chips">
@@ -199,7 +194,7 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 <div class="drawer" id="drawer" onclick="if(event.target===this)toggleDrawer()">
   <div class="dpanel">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="display:flex;align-items:center;gap:8px"><img src="/icon.svg" style="width:24px;height:24px;border-radius:6px"><strong>BLURO</strong></div>
+      <div style="display:flex;align-items:center;gap:8px"><img src="/logo.png" style="width:24px;height:24px;border-radius:6px"><strong>BLURO</strong></div>
       <button class="ibtn" onclick="toggleTheme()">◐</button>
     </div>
     <button class="pitem" style="background:var(--acc);color:#fff;justify-content:center;font-weight:600" onclick="newChat();toggleDrawer()">+ New Research Chat</button>
@@ -208,7 +203,6 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 </div>
 
 <script>
-window.addEventListener('load',()=>{setTimeout(()=>{document.getElementById('splash').classList.add('hide');},650);});
 let chats=JSON.parse(localStorage.getItem('b_chats')||'[]'),cid=null,selImgB64='',selImgMime='image/jpeg',selDataUrl='',ctrl=null,lastQ='';
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
 function toggleDrawer(){const d=document.getElementById('drawer');d.classList.toggle('open');renderHist();}
@@ -293,7 +287,7 @@ function addAI(data,origQ){
   const sr=srList.join(' • ');
   const fullCopy=[ansTxt,evList.length?'\nEvidence:\n- '+evList.join('\n- '):'',srList.length?'\nSources: '+sr:''].join('');
 
-  c.innerHTML=`<div class="brow"><span class="btag"><img src="/icon.svg" style="width:15px;height:15px;border-radius:4px">BLURO</span><span class="cbadge">${data.confidence||'Verified'}</span></div>
+  c.innerHTML=`<div class="brow"><span class="btag"><img src="/logo.png" style="width:15px;height:15px;border-radius:4px">BLURO</span><span class="cbadge">${data.confidence||'Verified'}</span></div>
   <div class="dtxt">${ansTxt}</div>
   ${ev?`<button class="etog" onclick="document.getElementById('${id}').classList.toggle('open')">Evidence & Sources ⌄</button>
   <div class="ebox" id="${id}"><ul>${ev}</ul><div class="srcs"><strong>Sources:</strong> ${sr}</div></div>`:''}`;
@@ -356,9 +350,9 @@ async function send(){
 def home():
     return render_template_string(HTML)
 
-@app.route("/icon.svg")
-def icon():
-    return Response(ICON_SVG, mimetype="image/svg+xml")
+@app.route("/logo.png")
+def logo():
+    return send_from_directory(".", "logo.png")
 
 @app.route("/manifest.json")
 def manifest():
@@ -367,9 +361,9 @@ def manifest():
         "short_name": "BLURO",
         "start_url": "/",
         "display": "standalone",
-        "background_color": "#000000",
+        "background_color": "#0047CC",
         "theme_color": "#0047CC",
-        "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+        "icons": [{"src": "/logo.png", "sizes": "512x512", "type": "image/png"}]
     })
 
 @app.route("/ask", methods=["POST"])
@@ -405,4 +399,4 @@ def ask():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-      
+  
