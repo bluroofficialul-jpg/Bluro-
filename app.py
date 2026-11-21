@@ -281,7 +281,7 @@ def ask():
             return jsonify({"error": "Empty"}), 400
         prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
         groq_key = (os.environ.get("GROQ_API_KEY") or "").strip()
-                if groq_key:
+            if groq_key:
             try:
                 g_model = "meta-llama/llama-4-scout-17b-16e-instruct" if img_b64 else "llama-3.3-70b-versatile"
                 user_content = [{"type": "text", "text": prompt_text}]
