@@ -298,8 +298,10 @@ def ask():
                     g_res = json.loads(resp.read().decode("utf-8"))
                     raw = g_res["choices"][0]["message"]["content"].strip()
                     return jsonify(json.loads(raw))
-            except Exception:
-                pass
+                      except Exception as ge:
+                      return jsonify({"direct_answer": f"Groq Error: {ge}", "evidence": [], "sources": [], "confidence": "Debug"})
+      
+                
         api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
         if not api_key:
             return jsonify({"direct_answer": "Please add GROQ_API_KEY or GEMINI_API_KEY in Render Environment.", "evidence": [], "sources": [], "confidence": "Setup Needed"})
