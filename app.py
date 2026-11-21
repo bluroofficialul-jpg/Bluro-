@@ -32,12 +32,11 @@ HTML = """<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
-#splash{position:fixed;inset:0;background:#0047CC;z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeSplash 0.35s ease 0.65s forwards;pointer-events:none}
-@keyframes fadeSplash{to{opacity:0;visibility:hidden;display:none}}
-.slogo{width:130px;height:130px;object-fit:contain;animation:popIn 0.5s cubic-bezier(0.16,1,0.3,1)}
-@keyframes popIn{0%{transform:scale(0.85);opacity:0}100%{transform:scale(1);opacity:1}}
+#splash{position:fixed;inset:0;background:#0047CC;z-index:999;display:flex;align-items:center;justify-content:center;transition:opacity 0.35s ease;pointer-events:none}
+#splash.hide{opacity:0;visibility:hidden}
+.slogo{width:130px;height:130px;object-fit:contain}
 
-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bdr);gap:8px;position:relative;z-index:10}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bdr);gap:8px}
 .ibtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0}
 .mbtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
 .tabs{display:flex;background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:3px}
@@ -45,12 +44,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .tab.active{background:var(--bdr);color:var(--txt)}
 
 main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
-.hero{margin:auto;text-align:center;max-width:340px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.hero img{width:56px;height:56px;border-radius:15px}
-.hero h1{font-size:24px;font-weight:700;letter-spacing:-0.4px}
-.hero p{font-size:13.5px;color:var(--mut);line-height:1.5}
-.chips{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:6px}
-.chip{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:11px 14px;border-radius:14px;font-size:13px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px}
+.hero{margin:auto;width:100%;max-width:360px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chip{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:13px 15px;border-radius:15px;font-size:13.5px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px}
 
 .u-wrap{align-self:flex-end;max-width:82%;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .u-img{max-width:210px;border-radius:14px;border:1px solid var(--bdr)}
@@ -70,13 +65,13 @@ main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:
 
 .actbar{display:flex;align-items:center;gap:4px;padding:2px 4px}
 .abtn{background:transparent;border:none;color:var(--mut);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.abtn:active,.abtn.on{color:#60a5fa;background:rgba(96,165,250,0.12)}
+.abtn.on{color:#60a5fa;background:rgba(96,165,250,0.12)}
 
 .thk{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--surf);border:1px solid var(--bdr);border-radius:18px;align-self:flex-start}
 .orb{width:11px;height:11px;border-radius:50%;background:var(--acc);animation:pulse 1.1s infinite}
 @keyframes pulse{0%,100%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.25);opacity:1}}
 
-footer{padding:8px 12px 14px;background:var(--bg);position:relative;z-index:10}
+footer{padding:8px 12px 14px;background:var(--bg)}
 .composer{background:var(--surf);border:1px solid var(--bdr);border-radius:26px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
 #prevWrap{display:none;padding:4px 4px 0}
 .prevCard{position:relative;display:inline-block;border-radius:14px;overflow:hidden;border:1px solid var(--bdr);background:#000}
@@ -116,49 +111,44 @@ footer{padding:8px 12px 14px;background:var(--bg);position:relative;z-index:10}
 <div id="toast">Copied</div>
 
 <header>
-  <button type="button" class="ibtn" id="btnMenu">☰</button>
-  <button type="button" class="mbtn" id="btnModel"><span id="mLabel">Bluro 3.8</span> ⌄</button>
+  <button type="button" class="ibtn" onclick="toggleDrawer()">☰</button>
+  <button type="button" class="mbtn" onclick="toggleModelPop()"><span id="mLabel">Bluro 3.8</span> ⌄</button>
   <div class="tabs">
-    <button type="button" class="tab active" id="tChat">Chat</button>
-    <button type="button" class="tab" id="tLib">Science Library</button>
+    <button type="button" class="tab active" id="tChat" onclick="switchTab('chat')">Chat</button>
+    <button type="button" class="tab" id="tLib" onclick="switchTab('lib')">Science Library</button>
   </div>
-  <button type="button" class="ibtn" id="btnNew">✎</button>
+  <button type="button" class="ibtn" onclick="newChat()">✎</button>
 </header>
 
 <div class="mpop" id="mPop">
-  <button type="button" class="pitem" id="optM1"><div><strong>Bluro 3.8</strong><br><small style="color:var(--mut)">Fast science research engine</small></div></button>
-  <button type="button" class="pitem" id="optM2"><div><strong>Bluro Pro</strong><br><small style="color:var(--mut)">Deep astrophysics reasoning</small></div></button>
+  <button type="button" class="pitem" onclick="setModel('Bluro 3.8')"><div><strong>Bluro 3.8</strong><br><small style="color:var(--mut)">Fast science research engine</small></div></button>
+  <button type="button" class="pitem" onclick="setModel('Bluro Pro')"><div><strong>Bluro Pro</strong><br><small style="color:var(--mut)">Deep astrophysics reasoning</small></div></button>
 </div>
 
 <main id="vChat">
   <div class="hero" id="hero">
-    <img src="/logo.png" alt="BLURO">
-    <h1>Ask BLURO</h1>
-    <p>Evidence-backed research assistant for astrophysics, cosmology, and science.</p>
-    <div class="chips">
-      <div class="chip" data-q="What happens inside a black hole event horizon?">🌌 What happens inside a black hole event horizon?</div>
-      <div class="chip" data-q="How does James Webb Space Telescope detect exoplanet atmospheres?">🔭 How does JWST detect exoplanet atmospheres?</div>
-      <div class="chip" data-q="How does quantum entanglement work without violating relativity?">⚛️ Quantum entanglement & relativity</div>
-    </div>
+    <div class="chip" onclick="qAsk('What happens inside a black hole event horizon?')">🌌 What happens inside a black hole event horizon?</div>
+    <div class="chip" onclick="qAsk('How does James Webb Space Telescope detect exoplanet atmospheres?')">🔭 How does JWST detect exoplanet atmospheres?</div>
+    <div class="chip" onclick="qAsk('How does quantum entanglement work without violating relativity?')">⚛️ Quantum entanglement & relativity</div>
   </div>
   <div id="feed" style="display:flex;flex-direction:column;gap:14px"></div>
 </main>
 
 <main id="vLib" style="display:none">
   <div class="lib-grid">
-    <div class="lcard" data-q="What happens inside a black hole event horizon according to general relativity?">
+    <div class="lcard" onclick="qAsk('What happens inside a black hole event horizon according to general relativity?')">
       <h3>Black Holes & Event Horizons</h3>
       <p>Spacetime curvature, Schwarzschild radius, and Hawking radiation.</p>
     </div>
-    <div class="lcard" data-q="How does James Webb Space Telescope detect exoplanet atmospheres?">
+    <div class="lcard" onclick="qAsk('How does James Webb Space Telescope detect exoplanet atmospheres?')">
       <h3>JWST & Exoplanet Spectroscopy</h3>
       <p>Transmission spectroscopy and biosignature molecules.</p>
     </div>
-    <div class="lcard" data-q="What is the scientific evidence for dark matter and dark energy?">
+    <div class="lcard" onclick="qAsk('What is the scientific evidence for dark matter and dark energy?')">
       <h3>Dark Matter & Dark Energy</h3>
       <p>Galaxy rotation curves, gravitational lensing, and cosmic expansion.</p>
     </div>
-    <div class="lcard" data-q="How does quantum entanglement work without violating relativity?">
+    <div class="lcard" onclick="qAsk('How does quantum entanglement work without violating relativity?')">
       <h3>Quantum Mechanics & Relativity</h3>
       <p>Non-local correlations and the no-communication theorem.</p>
     </div>
@@ -170,51 +160,56 @@ footer{padding:8px 12px 14px;background:var(--bg);position:relative;z-index:10}
     <div id="prevWrap">
       <div class="prevCard">
         <img id="prevImg" src="" alt="Preview">
-        <button type="button" class="prevClose" id="btnClearImg">✕</button>
+        <button type="button" class="prevClose" onclick="clearImg()">✕</button>
       </div>
     </div>
     <div class="ibox">
-      <button type="button" class="cbtn" id="btnPlus">+</button>
-      <input id="qin" placeholder="ask bluro">
-      <button type="button" class="cbtn" id="btnMic">
+      <button type="button" class="cbtn" onclick="togglePlus()">+</button>
+      <input id="qin" placeholder="ask bluro" onkeydown="if(event.key==='Enter')send()">
+      <button type="button" class="cbtn" onclick="startVoice()">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
       </button>
-      <button type="button" id="sbtn">↑</button>
+      <button type="button" id="sbtn" onclick="sendOrStop()">↑</button>
     </div>
   </div>
 </footer>
 
 <div class="pop" id="plusPop">
-  <button type="button" class="pitem" id="btnGal">🖼️ Photos & Gallery</button>
-  <button type="button" class="pitem" id="btnCam">📷 Take Photo</button>
+  <button type="button" class="pitem" onclick="document.getElementById('galInp').click();togglePlus()">🖼️ Photos & Gallery</button>
+  <button type="button" class="pitem" onclick="document.getElementById('camInp').click();togglePlus()">📷 Take Photo</button>
 </div>
-<input type="file" id="galInp" accept="image/*" style="display:none">
-<input type="file" id="camInp" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="galInp" accept="image/*" style="display:none" onchange="handleImg(this)">
+<input type="file" id="camInp" accept="image/*" capture="environment" style="display:none" onchange="handleImg(this)">
 
-<div class="drawer" id="drawer">
+<div class="drawer" id="drawer" onclick="if(event.target===this)toggleDrawer()">
   <div class="dpanel">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="display:flex;align-items:center;gap:8px"><img src="/logo.png" style="width:24px;height:24px;border-radius:6px"><strong>BLURO</strong></div>
-      <button type="button" class="ibtn" id="btnTheme">◐</button>
+      <strong>BLURO</strong>
+      <button type="button" class="ibtn" onclick="toggleTheme()">◐</button>
     </div>
-    <button type="button" class="pitem" style="background:var(--acc);color:#fff;justify-content:center;font-weight:600" id="btnDrawerNew">+ New Research Chat</button>
+    <button type="button" class="pitem" style="background:var(--acc);color:#fff;justify-content:center;font-weight:600" onclick="newChat();toggleDrawer()">+ New Research Chat</button>
     <div id="hList" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1"></div>
   </div>
 </div>
 
 <script>
-let chats = [];
-try { chats = JSON.parse(localStorage.getItem('b_chats') || '[]'); } catch(e) { chats = []; }
-let cid = null, selImgB64 = '', selImgMime = 'image/jpeg', selDataUrl = '', ctrl = null, lastQ = '';
+setTimeout(function() {
+  var sp = document.getElementById('splash');
+  if (sp) sp.classList.add('hide');
+}, 700);
+
+var chats = [];
+try { chats = JSON.parse(localStorage.getItem('b_chats') || '[]'); } catch (e) { chats = []; }
+var cid = null, selImgB64 = '', selImgMime = 'image/jpeg', selDataUrl = '', ctrl = null, lastQ = '';
 function toast(m) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = m;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+  setTimeout(function() { t.classList.remove('show'); }, 1800);
 }
 
 function toggleDrawer() {
-  const d = document.getElementById('drawer');
+  var d = document.getElementById('drawer');
   d.classList.toggle('open');
   renderHist();
 }
@@ -233,14 +228,14 @@ function setModel(m) {
 }
 
 function toggleTheme() {
-  const t = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  var t = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
   document.body.setAttribute('data-theme', t);
-  try { localStorage.setItem('b_theme', t); } catch(e) {}
+  try { localStorage.setItem('b_theme', t); } catch (e) {}
 }
 
 try {
   if (localStorage.getItem('b_theme') === 'light') document.body.setAttribute('data-theme', 'light');
-} catch(e) {}
+} catch (e) {}
 
 function switchTab(t) {
   document.getElementById('vChat').style.display = t === 'chat' ? 'flex' : 'none';
@@ -258,18 +253,21 @@ function newChat() {
 }
 
 function renderHist() {
-  const h = document.getElementById('hList');
+  var h = document.getElementById('hList');
   h.innerHTML = '';
-  chats.forEach(c => {
-    const d = document.createElement('div');
+  chats.forEach(function(c) {
+    var d = document.createElement('div');
     d.className = 'citem';
     d.textContent = c.t;
-    d.onclick = () => {
+    d.onclick = function() {
       cid = c.id;
       document.getElementById('hero').style.display = 'none';
-      const f = document.getElementById('feed');
+      var f = document.getElementById('feed');
       f.innerHTML = '';
-      c.m.forEach(x => x.r === 'u' ? addU(x.t, x.img || '') : addAI(x.d, x.q || ''));
+      c.m.forEach(function(x) {
+        if (x.r === 'u') addU(x.t, x.img || '');
+        else addAI(x.d, x.q || '');
+      });
       toggleDrawer();
       switchTab('chat');
     };
@@ -278,11 +276,11 @@ function renderHist() {
 }
 
 function handleImg(inp) {
-  const f = inp.files[0];
+  var f = inp.files[0];
   if (!f) return;
   selImgMime = f.type || 'image/jpeg';
-  const r = new FileReader();
-  r.onload = () => {
+  var r = new FileReader();
+  r.onload = function() {
     selDataUrl = r.result;
     selImgB64 = r.result.split(',')[1];
     document.getElementById('prevImg').src = selDataUrl;
@@ -301,10 +299,10 @@ function clearImg() {
 }
 
 function startVoice() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return alert('Voice not supported on this browser');
-  const rec = new SR();
-  rec.onresult = e => {
+  var rec = new SR();
+  rec.onresult = function(e) {
     document.getElementById('qin').value = e.results[0][0].transcript;
     send();
   };
@@ -318,16 +316,16 @@ function qAsk(t) {
 }
 
 function addU(t, imgUrl) {
-  const w = document.createElement('div');
+  var w = document.createElement('div');
   w.className = 'u-wrap';
   if (imgUrl) {
-    const im = document.createElement('img');
+    var im = document.createElement('img');
     im.className = 'u-img';
     im.src = imgUrl;
     w.appendChild(im);
   }
   if (t) {
-    const d = document.createElement('div');
+    var d = document.createElement('div');
     d.className = 'u-msg';
     d.textContent = t;
     w.appendChild(d);
@@ -339,12 +337,12 @@ function copyResp(btn, txt) {
   navigator.clipboard.writeText(txt);
   btn.classList.add('on');
   toast('Copied to clipboard');
-  setTimeout(() => btn.classList.remove('on'), 1500);
+  setTimeout(function() { btn.classList.remove('on'); }, 1500);
 }
 
 function shareResp(txt) {
   if (navigator.share) {
-    navigator.share({ title: 'BLURO Research', text: txt }).catch(() => {});
+    navigator.share({ title: 'BLURO Research', text: txt }).catch(function() {});
   } else {
     navigator.clipboard.writeText(txt);
     toast('Copied to share');
@@ -352,55 +350,55 @@ function shareResp(txt) {
 }
 
 function addAI(data, origQ) {
-  const wrap = document.createElement('div');
+  var wrap = document.createElement('div');
   wrap.className = 'ai-wrap';
-  const c = document.createElement('div');
+  var c = document.createElement('div');
   c.className = 'card';
-  const id = 'e' + Math.random().toString(36).slice(2, 8);
-  const ansTxt = data.direct_answer || data.error || 'No response';
-  const evList = data.evidence || [];
-  const srList = data.sources || [];
-  const ev = evList.map(x => '<li>' + x + '</li>').join('');
-  const sr = srList.join(' • ');
-  const fullCopy = [ansTxt, evList.length ? '\nEvidence:\n- ' + evList.join('\n- ') : '', srList.length ? '\nSources: ' + sr : ''].join('');
+  var id = 'e' + Math.random().toString(36).slice(2, 8);
+  var ansTxt = data.direct_answer || data.error || 'No response';
+  var evList = data.evidence || [];
+  var srList = data.sources || [];
+  var ev = evList.map(function(x) { return '<li>' + x + '</li>'; }).join('');
+  var sr = srList.join(' • ');
+  var fullCopy = [ansTxt, evList.length ? '\nEvidence:\n- ' + evList.join('\n- ') : '', srList.length ? '\nSources: ' + sr : ''].join('');
 
-  c.innerHTML = '<div class="brow"><span class="btag"><img src="/logo.png" style="width:15px;height:15px;border-radius:4px">BLURO</span><span class="cbadge">' + (data.confidence || 'Verified') + '</span></div>' +
+  c.innerHTML = '<div class="brow"><span class="btag">BLURO</span><span class="cbadge">' + (data.confidence || 'Verified') + '</span></div>' +
     '<div class="dtxt">' + ansTxt + '</div>' +
     (ev ? '<button type="button" class="etog" onclick="document.getElementById(\'' + id + '\').classList.toggle(\'open\')">Evidence & Sources ⌄</button>' +
     '<div class="ebox" id="' + id + '"><ul>' + ev + '</ul><div class="srcs"><strong>Sources:</strong> ' + sr + '</div></div>' : '');
 
-  const bar = document.createElement('div');
+  var bar = document.createElement('div');
   bar.className = 'actbar';
 
-  const bLike = document.createElement('button');
+  var bLike = document.createElement('button');
   bLike.type = 'button';
   bLike.className = 'abtn';
   bLike.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
-  bLike.onclick = () => { bLike.classList.toggle('on'); bDis.classList.remove('on'); toast('Feedback saved'); };
+  bLike.onclick = function() { bLike.classList.toggle('on'); bDis.classList.remove('on'); toast('Feedback saved'); };
 
-  const bDis = document.createElement('button');
+  var bDis = document.createElement('button');
   bDis.type = 'button';
   bDis.className = 'abtn';
   bDis.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>';
-  bDis.onclick = () => { bDis.classList.toggle('on'); bLike.classList.remove('on'); toast('Feedback saved'); };
+  bDis.onclick = function() { bDis.classList.toggle('on'); bLike.classList.remove('on'); toast('Feedback saved'); };
 
-  const bReg = document.createElement('button');
+  var bReg = document.createElement('button');
   bReg.type = 'button';
   bReg.className = 'abtn';
   bReg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>';
-  bReg.onclick = () => { if (origQ || lastQ) qAsk(origQ || lastQ); };
+  bReg.onclick = function() { if (origQ || lastQ) qAsk(origQ || lastQ); };
 
-  const bShr = document.createElement('button');
+  var bShr = document.createElement('button');
   bShr.type = 'button';
   bShr.className = 'abtn';
   bShr.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
-  bShr.onclick = () => shareResp(fullCopy);
+  bShr.onclick = function() { shareResp(fullCopy); };
 
-  const bCpy = document.createElement('button');
+  var bCpy = document.createElement('button');
   bCpy.type = 'button';
   bCpy.className = 'abtn';
   bCpy.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-  bCpy.onclick = () => copyResp(bCpy, fullCopy);
+  bCpy.onclick = function() { copyResp(bCpy, fullCopy); };
 
   bar.append(bLike, bDis, bReg, bShr, bCpy);
   wrap.append(c, bar);
@@ -413,44 +411,44 @@ function sendOrStop() {
 }
 
 async function send() {
-  const inp = document.getElementById('qin');
-  const q = inp.value.trim();
+  var inp = document.getElementById('qin');
+  var q = inp.value.trim();
   if (!q && !selImgB64) return;
   lastQ = q;
-  const b64 = selImgB64, mime = selImgMime, imgUrl = selDataUrl;
+  var b64 = selImgB64, mime = selImgMime, imgUrl = selDataUrl;
   document.getElementById('hero').style.display = 'none';
   addU(q, imgUrl);
-  const titleTxt = q || 'Image Analysis';
+  var titleTxt = q || 'Image Analysis';
   if (!cid) {
     cid = 'c' + Date.now();
     chats.unshift({ id: cid, t: titleTxt.slice(0, 40), m: [] });
   }
-  const ac = chats.find(x => x.id === cid);
+  var ac = chats.find(function(x) { return x.id === cid; });
   ac.m.push({ r: 'u', t: q });
-  try { localStorage.setItem('b_chats', JSON.stringify(chats)); } catch(e) {}
+  try { localStorage.setItem('b_chats', JSON.stringify(chats)); } catch (e) {}
   clearImg();
   inp.value = '';
-  const sb = document.getElementById('sbtn');
+  var sb = document.getElementById('sbtn');
   sb.textContent = '■';
-  const fd = document.getElementById('feed'), vc = document.getElementById('vChat');
-  const th = document.createElement('div');
+  var fd = document.getElementById('feed'), vc = document.getElementById('vChat');
+  var th = document.createElement('div');
   th.className = 'thk';
   th.innerHTML = '<div class="orb"></div><span style="font-size:13px;color:var(--mut)">Researching evidence...</span>';
   fd.appendChild(th);
   vc.scrollTop = vc.scrollHeight;
   ctrl = new AbortController();
   try {
-    const res = await fetch('/ask', {
+    var res = await fetch('/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question: q, image_base64: b64, image_mime: mime }),
       signal: ctrl.signal
     });
-    const data = await res.json();
+    var data = await res.json();
     th.remove();
     addAI(data, q);
     ac.m.push({ r: 'a', d: data, q: q });
-    try { localStorage.setItem('b_chats', JSON.stringify(chats)); } catch(e) {}
+    try { localStorage.setItem('b_chats', JSON.stringify(chats)); } catch (e) {}
   } catch (e) {
     th.remove();
     addAI({ direct_answer: e.name === 'AbortError' ? 'Generation stopped.' : 'Network timeout. Please try again.', evidence: [], sources: [], confidence: 'Info' }, q);
@@ -459,29 +457,6 @@ async function send() {
   sb.textContent = '↑';
   vc.scrollTop = vc.scrollHeight;
 }
-
-document.getElementById('btnMenu').onclick = toggleDrawer;
-document.getElementById('btnModel').onclick = toggleModelPop;
-document.getElementById('optM1').onclick = () => setModel('Bluro 3.8');
-document.getElementById('optM2').onclick = () => setModel('Bluro Pro');
-document.getElementById('tChat').onclick = () => switchTab('chat');
-document.getElementById('tLib').onclick = () => switchTab('lib');
-document.getElementById('btnNew').onclick = newChat;
-document.getElementById('btnDrawerNew').onclick = () => { newChat(); toggleDrawer(); };
-document.getElementById('btnTheme').onclick = toggleTheme;
-document.getElementById('btnPlus').onclick = togglePlus;
-document.getElementById('btnGal').onclick = () => { document.getElementById('galInp').click(); togglePlus(); };
-document.getElementById('btnCam').onclick = () => { document.getElementById('camInp').click(); togglePlus(); };
-document.getElementById('galInp').onchange = function() { handleImg(this); };
-document.getElementById('camInp').onchange = function() { handleImg(this); };
-document.getElementById('btnClearImg').onclick = clearImg;
-document.getElementById('btnMic').onclick = startVoice;
-document.getElementById('sbtn').onclick = sendOrStop;
-document.getElementById('qin').onkeydown = e => { if (e.key === 'Enter') send(); };
-document.getElementById('drawer').onclick = e => { if (e.target.id === 'drawer') toggleDrawer(); };
-document.querySelectorAll('.chip, .lcard').forEach(el => {
-  el.onclick = () => qAsk(el.getAttribute('data-q'));
-});
 </script>
 </body>
 </html>"""
@@ -529,7 +504,7 @@ def ask():
             response_mime_type="application/json",
             temperature=0.3
         )
-        res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
+        res = client.models.generate_content(model="gemini-2.5-flash", contents=contents, config=cfg)
         raw = (res.text or "").strip()
         if raw.startswith("```"):
             raw = raw.strip("`").replace("json\n", "", 1).strip()
@@ -539,3 +514,4 @@ def ask():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+      
