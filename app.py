@@ -287,8 +287,19 @@ def ask():
             contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
         client = genai.Client(api_key=api_key)
         cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
-        res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
-        raw = (res.text or "").strip()
+        res = None
+        last_err = ""
+        for m in ["gemini-3.8-flash", "gemini-2.5-flash-lite", "gemini-2.5-flash"]:
+            try:
+                res = client.models.generate_content(model=m, contents=contents, config=cfg)
+                if res and res.text:
+                    break
+            except Exception as me:
+                last_err = str(me)
+                continue
+        if not res or not res.text:
+            return jsonify({"direct_answer": f"Server busy, please tap retry: {last_err}", "evidence": [], "sources": [], "confidence": "Notice"})
+        raw = res.text.strip()
         if raw.startswith("```"):
             raw = raw.strip("`").replace("json\n", "", 1).strip()
         return jsonify(json.loads(raw))
@@ -297,4 +308,4 @@ def ask():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-                                                                                                                                                                           
+  
