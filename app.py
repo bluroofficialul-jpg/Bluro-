@@ -272,32 +272,35 @@ def manifest():
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    try:
-        data = request.get_json() or {}
-        q = (data.get("question") or "").strip()
-        img_b64 = data.get("image_base64") or ""
-        img_mime = data.get("image_mime") or "image/jpeg"
-        if not q and not img_b64:
-            return jsonify({"error": "Empty"}), 400
-        prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
-        groq_key = (os.environ.get("GROQ_API_KEY") or "").strip()
-        if groq_key:
-        try:
-                g_model = "meta-llama/llama-4-scout-17b-16e-instruct" if img_b64 else "llama-3.3-70b-versatile"
-                user_content = [{"type": "text", "text": prompt_text}]
-                if img_b64:
-                    user_content.append({"type": "image_url", "image_url": {"url": f"data:{img_mime};base64,{img_b64}"}})
-                payload = json.dumps({
-                    "model": g_model,
-                    "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_content}],
-                    "response_format": {"type": "json_object"},
-                    "temperature": 0.3
-                }).encode("utf-8")
-                req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions", data=payload, headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json", "User-Agent": "BLURO/1.0"})
-                with urllib.request.urlopen(req, timeout=15) as resp:
-                    g_res = json.loads(resp.read().decode("utf-8"))
-                    raw = g_res["choices"][0]["message"]["content"].strip()
-                    return jsonify(json.loads(raw))
-            except Exception as ge:
-                return jsonify({"direct_answer": f"Groq Error: {ge}", "evidence": [], "sources": [], "confidence": "Debug"})
-              
+  try:
+    data = request.get_json() or {}
+    q = (data.get("question") or "").strip()
+    img_b64 = data.get("image_base64") or ""
+    img_mime = data.get("image_mime") or "image/jpeg"
+    if not q and not img_b64:
+      return jsonify({"error": "Empty"}), 400
+    prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
+    groq_key = (os.environ.get("GROQ_API_KEY") or "").strip()
+    if not groq_key:
+      return jsonify({"direct_answer": "Please add GROQ_API_KEY in Render Environment.", "evidence": [], "sources": [], "confidence": "Setup Needed"})
+    g_model = "meta-llama/llama-4-scout-17b-16e-instruct" if img_b64 else "llama-3.3-70b-versatile"
+    user_content = [{"type": "text", "text": prompt_text}]
+    if img_b64:
+      user_content.append({"type": "image_url", "image_url": {"url": f"data:{img_mime};base64,{img_b64}"}})
+    payload = json.dumps({
+      "model": g_model,
+      "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_content}],
+      "response_format": {"type": "json_object"},
+      "temperature": 0.3
+    }).encode("utf-8")
+    req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions", data=payload, headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json", "User-Agent": "BLURO/1.0"})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+      g_res = json.loads(resp.read().decode("utf-8"))
+      raw = g_res["choices"][0]["message"]["content"].strip()
+      return jsonify(json.loads(raw))
+  except Exception as ge:
+    return jsonify({"direct_answer": f"Status: {ge}", "evidence": [], "sources": [], "confidence": "Debug"})
+
+if __name__ == "__main__":
+  app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+    
