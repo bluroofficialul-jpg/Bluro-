@@ -27,67 +27,80 @@ HTML = r"""<!DOCTYPE html>
 <link rel="manifest" href="/manifest.json">
 <title>BLURO</title>
 <style>
-:root{--bg:#000000;--surf:#121316;--card:#18191e;--bdr:#262830;--txt:#f5f6f8;--mut:#8e929f;--acc:#0047CC;--ubg:#1f2128}
-[data-theme="light"]{--bg:#f8fafc;--surf:#ffffff;--card:#ffffff;--bdr:#e2e8f0;--txt:#0f172a;--mut:#64748b;--acc:#0047CC;--ubg:#eef2ff}
+:root{--bg:#050608;--surf:#0f1116;--card:#141720;--bdr:#222736;--txt:#f5f7fb;--mut:#8b93a7;--acc:#0047CC;--glow:rgba(0,71,204,0.22);--ubg:#181c28;--tile:#161a24}
+[data-theme="light"]{--bg:#f4f7fc;--surf:#ffffff;--card:#ffffff;--bdr:#dbe3f0;--txt:#0b1220;--mut:#5c667d;--acc:#0047CC;--glow:rgba(0,71,204,0.12);--ubg:#eaf0ff;--tile:#f0f4fc}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--txt);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 #splash{position:fixed;inset:0;background:#0047CC;z-index:999;display:flex;align-items:center;justify-content:center;animation:splashOut 0.3s ease 0.7s forwards;pointer-events:none}
 @keyframes splashOut{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}100%{opacity:0;visibility:hidden;display:none}}
 .slogo{width:130px;height:130px;object-fit:contain}
 header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bdr);gap:8px}
-.ibtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0}
-.mbtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
-.tabs{display:flex;background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:3px}
-.tab{padding:5px 12px;border-radius:16px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;border:none;background:transparent}
-.tab.active{background:var(--bdr);color:var(--txt)}
+.ibtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0}
+.mbtn{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:7px 13px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
+.tabs{display:flex;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:3px}
+.tab{padding:5px 12px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;border:none;background:transparent}
+.tab.active{background:var(--acc);color:#fff}
 main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 .hero{margin:auto;width:100%;max-width:360px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.chip{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:13px 15px;border-radius:15px;font-size:13.5px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px}
+.chip{background:var(--surf);border:1px solid var(--bdr);color:var(--txt);padding:13px 15px;border-radius:14px;font-size:13.5px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px}
 .u-wrap{align-self:flex-end;max-width:82%;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .u-img{max-width:210px;border-radius:14px;border:1px solid var(--bdr)}
-.u-msg{background:var(--ubg);color:var(--txt);padding:11px 15px;border-radius:20px 20px 4px 20px;font-size:15px;line-height:1.45;word-wrap:break-word;border:1px solid var(--bdr)}
+.u-msg{background:var(--ubg);color:var(--txt);padding:11px 15px;border-radius:18px 18px 4px 18px;font-size:15px;line-height:1.45;word-wrap:break-word;border:1px solid var(--bdr)}
 .ai-wrap{display:flex;flex-direction:column;gap:6px;max-width:94%}
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:15px;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border:1px solid var(--bdr);border-left:3px solid var(--acc);border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:10px}
 .brow{display:flex;align-items:center;justify-content:space-between}
-.btag{font-size:11px;font-weight:800;letter-spacing:0.8px;color:#3b82f6}
-.cbadge{font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(0,71,204,0.18);color:#60a5fa;font-weight:600}
+.btag{font-size:11px;font-weight:800;letter-spacing:1px;color:#4d8dff}
+.cbadge{font-size:11px;padding:3px 9px;border-radius:8px;background:var(--glow);color:#7aa8ff;font-weight:600;border:1px solid rgba(77,141,255,0.25)}
 .dtxt{font-size:15px;line-height:1.58}
-.etog{background:transparent;border:1px solid var(--bdr);color:var(--mut);padding:6px 11px;border-radius:10px;font-size:12px;cursor:pointer;align-self:flex-start}
+.etog{background:transparent;border:1px solid var(--bdr);color:var(--mut);padding:6px 11px;border-radius:9px;font-size:12px;cursor:pointer;align-self:flex-start}
 .ebox{display:none;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid var(--bdr);font-size:13px;color:var(--mut)}
 .ebox.open{display:flex}
 .ebox ul{padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .srcs{font-size:12px;color:var(--txt)}
-.actbar{display:flex;align-items:center;gap:6px;padding:2px 4px}
-.abtn{background:transparent;border:none;color:var(--mut);padding:5px 8px;border-radius:8px;font-size:13px;cursor:pointer}
-.abtn.on{color:#60a5fa;background:rgba(96,165,250,0.12)}
-.thk{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--surf);border:1px solid var(--bdr);border-radius:18px;align-self:flex-start}
-.orb{width:11px;height:11px;border-radius:50%;background:var(--acc);animation:pulse 1.1s infinite}
-@keyframes pulse{0%,100%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.25);opacity:1}}
+.actbar{display:flex;align-items:center;gap:6px;padding:2px 2px}
+.abtn{background:var(--surf);border:1px solid var(--bdr);color:var(--mut);width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.abtn.on{color:#4d8dff;border-color:#4d8dff;background:var(--glow)}
+.thk{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;align-self:flex-start}
+.orb{width:11px;height:11px;border-radius:3px;background:var(--acc);animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{transform:rotate(0deg) scale(0.85);opacity:0.5}50%{transform:rotate(45deg) scale(1.15);opacity:1}}
 footer{padding:8px 12px 14px;background:var(--bg)}
-.composer{background:var(--surf);border:1px solid var(--bdr);border-radius:26px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
+.composer{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:8px 10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.35)}
 #prevWrap{display:none;padding:4px 4px 0}
-.prevCard{position:relative;display:inline-block;border-radius:14px;overflow:hidden;border:1px solid var(--bdr);background:#000}
+.prevCard{position:relative;display:inline-block;border-radius:12px;overflow:hidden;border:1px solid var(--bdr);background:#000}
 #prevImg{display:block;height:74px;width:auto;max-width:140px;object-fit:cover}
-.prevClose{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.78);color:#fff;border:1px solid rgba(255,255,255,0.25);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.prevClose{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:7px;background:rgba(0,0,0,0.82);color:#fff;border:1px solid rgba(255,255,255,0.25);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .ibox{display:flex;align-items:center;gap:6px}
-.cbtn{width:36px;height:36px;border-radius:50%;border:none;background:transparent;color:#ffffff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:21px;flex-shrink:0}
-[data-theme="light"] .cbtn{color:#0f172a}
+.cbtn{width:36px;height:36px;border-radius:11px;border:none;background:transparent;color:#ffffff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:21px;flex-shrink:0}
+[data-theme="light"] .cbtn{color:#0b1220}
 #qin{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:15.5px;padding:6px 4px}
-#sbtn{width:36px;height:36px;border-radius:50%;border:none;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0}
+#sbtn{width:36px;height:36px;border-radius:11px;border:none;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;box-shadow:0 2px 10px var(--glow)}
 .lib-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.lcard{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:15px;cursor:pointer}
+.lcard{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:15px;cursor:pointer}
 .lcard h3{font-size:15.5px;margin-bottom:5px}
 .lcard p{font-size:13px;color:var(--mut);line-height:1.4}
-.drawer{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:50;display:none}
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:50;display:none}
 .drawer.open{display:flex}
 .dpanel{width:280px;background:var(--surf);height:100%;padding:16px;display:flex;flex-direction:column;gap:12px;border-right:1px solid var(--bdr)}
-.citem{padding:10px;border-radius:12px;border:1px solid var(--bdr);font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pop{position:fixed;bottom:76px;left:16px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:6px;display:none;flex-direction:column;gap:4px;z-index:40;box-shadow:0 10px 25px rgba(0,0,0,0.5)}
-.pop.open{display:flex}
-.pitem{padding:10px 14px;border:none;background:transparent;color:var(--txt);text-align:left;font-size:14px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:10px}
-.mpop{position:fixed;top:58px;left:56px;background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:8px;display:none;flex-direction:column;gap:4px;z-index:40;width:215px;box-shadow:0 10px 25px rgba(0,0,0,0.5)}
+.citem{padding:10px;border-radius:11px;border:1px solid var(--bdr);font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bsheet-bg{position:fixed;inset:0;background:rgba(2,4,10,0.72);backdrop-filter:blur(4px);z-index:60;display:none;align-items:flex-end}
+.bsheet-bg.open{display:flex}
+.bsheet{width:100%;background:var(--surf);border-top:1px solid rgba(77,141,255,0.3);border-radius:24px 24px 0 0;padding:12px 16px 26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 -10px 35px rgba(0,71,204,0.18);animation:slideUp 0.2s ease}
+@keyframes slideUp{from{transform:translateY(36px);opacity:0.4}to{transform:translateY(0);opacity:1}}
+.bhead{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.btitle{font-size:11px;font-weight:800;letter-spacing:1.2px;color:#4d8dff;text-transform:uppercase}
+.bhandle{width:34px;height:4px;border-radius:2px;background:var(--bdr)}
+.btiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btile{background:linear-gradient(145deg,var(--tile),rgba(0,71,204,0.08));border:1px solid var(--bdr);border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:var(--txt);cursor:pointer;font-size:13.5px;font-weight:600}
+.btile-ico{width:40px;height:40px;border-radius:11px;background:var(--glow);border:1px solid rgba(77,141,255,0.3);color:#6ea3ff;display:flex;align-items:center;justify-content:center}
+.blist{display:flex;flex-direction:column;gap:6px}
+.brow-opt{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;background:var(--tile);border:1px solid var(--bdr);color:var(--txt);text-align:left;cursor:pointer}
+.brow-ico{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.04);color:#8faeff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brow-opt strong{display:block;font-size:14px;font-weight:600}
+.brow-opt span{display:block;font-size:11.5px;color:var(--mut);margin-top:2px}
+.mpop{position:fixed;top:58px;left:56px;background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:8px;display:none;flex-direction:column;gap:4px;z-index:40;width:215px;box-shadow:0 10px 25px rgba(0,0,0,0.5)}
 .mpop.open{display:flex}
-#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#262830;color:#fff;padding:7px 14px;border-radius:99px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity 0.25s;z-index:80}
+.pitem{padding:10px 14px;border:none;background:transparent;color:var(--txt);text-align:left;font-size:14px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px}
+#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#1c2230;border:1px solid var(--bdr);color:#fff;padding:7px 14px;border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity 0.25s;z-index:80}
 #toast.show{opacity:1}
 </style>
 </head>
@@ -129,14 +142,35 @@ footer{padding:8px 12px 14px;background:var(--bg)}
     <div class="ibox">
       <button type="button" class="cbtn" onclick="togglePlus()">+</button>
       <input id="qin" placeholder="ask bluro" onkeydown="if(event.key==='Enter')send()">
-      <button type="button" class="cbtn" onclick="startVoice()">🎙️</button>
+      <button type="button" class="cbtn" onclick="startVoice()"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></button>
       <button type="button" id="sbtn" onclick="sendOrStop()">↑</button>
     </div>
   </div>
 </footer>
-<div class="pop" id="plusPop">
-  <button type="button" class="pitem" onclick="document.getElementById('galInp').click();togglePlus()">🖼️ Photos & Gallery</button>
-  <button type="button" class="pitem" onclick="document.getElementById('camInp').click();togglePlus()">📷 Take Photo</button>
+<div class="bsheet-bg" id="plusPop" onclick="if(event.target===this)togglePlus()">
+  <div class="bsheet">
+    <div class="bhead"><span class="btitle">BLURO INPUT LAB</span><div class="bhandle"></div><span style="width:70px"></span></div>
+    <div class="btiles">
+      <button type="button" class="btile" onclick="document.getElementById('galInp').click();togglePlus()">
+        <div class="btile-ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+        <span>Photos</span>
+      </button>
+      <button type="button" class="btile" onclick="document.getElementById('camInp').click();togglePlus()">
+        <div class="btile-ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+        <span>Camera</span>
+      </button>
+    </div>
+    <div class="blist">
+      <button type="button" class="brow-opt" onclick="togglePlus();document.getElementById('qin').value='Deep peer-reviewed analysis: ';document.getElementById('qin').focus()">
+        <div class="brow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+        <div><strong>Deep Evidence Mode</strong><span>Peer-reviewed breakdown with citations</span></div>
+      </button>
+      <button type="button" class="brow-opt" onclick="togglePlus();document.getElementById('galInp').click()">
+        <div class="brow-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
+        <div><strong>Specimen & Chart Scan</strong><span>Analyze sky photos, formulas, or lab graphs</span></div>
+      </button>
+    </div>
+  </div>
 </div>
 <input type="file" id="galInp" accept="image/*" style="display:none" onchange="handleImg(this)">
 <input type="file" id="camInp" accept="image/*" capture="environment" style="display:none" onchange="handleImg(this)">
@@ -151,6 +185,7 @@ footer{padding:8px 12px 14px;background:var(--bg)}
 var chats = [];
 try { chats = JSON.parse(localStorage.getItem('b_chats') || '[]'); } catch (e) { chats = []; }
 var cid = null, selImgB64 = '', selImgMime = 'image/jpeg', selDataUrl = '', ctrl = null, lastQ = '';
+
 function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1800); }
 function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); renderHist(); }
 function togglePlus() { document.getElementById('plusPop').classList.toggle('open'); }
@@ -184,10 +219,12 @@ function addAI(data, origQ) {
   var fullCopy = [ansTxt, evList.length ? '\nEvidence:\n- ' + evList.join('\n- ') : '', srList.length ? '\nSources: ' + sr : ''].join('');
   c.innerHTML = '<div class="brow"><span class="btag">BLURO</span><span class="cbadge">' + (data.confidence || 'Verified') + '</span></div><div class="dtxt">' + ansTxt + '</div>' + (ev ? '<button type="button" class="etog" onclick="document.getElementById(\'' + id + '\').classList.toggle(\'open\')">Evidence & Sources ⌄</button><div class="ebox" id="' + id + '"><ul>' + ev + '</ul><div class="srcs"><strong>Sources:</strong> ' + sr + '</div></div>' : '');
   var bar = document.createElement('div'); bar.className = 'actbar';
-  var bLike = document.createElement('button'); bLike.type = 'button'; bLike.className = 'abtn'; bLike.textContent = '👍'; bLike.onclick = function() { bLike.classList.toggle('on'); toast('Feedback saved'); };
-  var bReg = document.createElement('button'); bReg.type = 'button'; bReg.className = 'abtn'; bReg.textContent = '↻'; bReg.onclick = function() { if (origQ || lastQ) qAsk(origQ || lastQ); };
-  var bCpy = document.createElement('button'); bCpy.type = 'button'; bCpy.className = 'abtn'; bCpy.textContent = '📋'; bCpy.onclick = function() { navigator.clipboard.writeText(fullCopy); toast('Copied'); };
-  bar.append(bLike, bReg, bCpy); wrap.append(c, bar); document.getElementById('feed').appendChild(wrap);
+  var bLike = document.createElement('button'); bLike.type = 'button'; bLike.className = 'abtn'; bLike.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>'; bLike.onclick = function() { bLike.classList.toggle('on'); bDis.classList.remove('on'); toast('Feedback saved'); };
+  var bDis = document.createElement('button'); bDis.type = 'button'; bDis.className = 'abtn'; bDis.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>'; bDis.onclick = function() { bDis.classList.toggle('on'); bLike.classList.remove('on'); toast('Feedback saved'); };
+  var bReg = document.createElement('button'); bReg.type = 'button'; bReg.className = 'abtn'; bReg.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>'; bReg.onclick = function() { if (origQ || lastQ) qAsk(origQ || lastQ); };
+  var bShr = document.createElement('button'); bShr.type = 'button'; bShr.className = 'abtn'; bShr.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'; bShr.onclick = function() { if (navigator.share) navigator.share({ title: 'BLURO', text: fullCopy }).catch(function(){}); else { navigator.clipboard.writeText(fullCopy); toast('Copied'); } };
+  var bCpy = document.createElement('button'); bCpy.type = 'button'; bCpy.className = 'abtn'; bCpy.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'; bCpy.onclick = function() { navigator.clipboard.writeText(fullCopy); toast('Copied'); };
+  bar.append(bLike, bDis, bReg, bShr, bCpy); wrap.append(c, bar); document.getElementById('feed').appendChild(wrap);
 }
 function sendOrStop() { if (ctrl) { ctrl.abort(); ctrl = null; return; } send(); }
 async function send() {
@@ -250,7 +287,7 @@ def ask():
             contents.append(types.Part.from_bytes(data=img_bytes, mime_type=img_mime))
         client = genai.Client(api_key=api_key)
         cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
-        res = client.models.generate_content(model="gemini-2.5-flash", contents=contents, config=cfg)
+        res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
         raw = (res.text or "").strip()
         if raw.startswith("```"):
             raw = raw.strip("`").replace("json\n", "", 1).strip()
@@ -260,3 +297,4 @@ def ask():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+                                                                                                                                                                           
