@@ -281,7 +281,7 @@ def ask():
             return jsonify({"error": "Empty"}), 400
         prompt_text = q if q else "Analyze this image scientifically with evidence and sources."
         groq_key = (os.environ.get("GROQ_API_KEY") or "").strip()
-        if groq_key:
+                if groq_key:
             try:
                 g_model = "meta-llama/llama-4-scout-17b-16e-instruct" if img_b64 else "llama-3.3-70b-versatile"
                 user_content = [{"type": "text", "text": prompt_text}]
@@ -298,26 +298,6 @@ def ask():
                     g_res = json.loads(resp.read().decode("utf-8"))
                     raw = g_res["choices"][0]["message"]["content"].strip()
                     return jsonify(json.loads(raw))
-                except Exception as ge:
+            except Exception as ge:
                 return jsonify({"direct_answer": f"Groq Error: {ge}", "evidence": [], "sources": [], "confidence": "Debug"})
-      
-                
-        api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
-        if not api_key:
-            return jsonify({"direct_answer": "Please add GROQ_API_KEY or GEMINI_API_KEY in Render Environment.", "evidence": [], "sources": [], "confidence": "Setup Needed"})
-        contents = [prompt_text]
-        if img_b64:
-            contents.append(types.Part.from_bytes(data=base64.b64decode(img_b64), mime_type=img_mime))
-        client = genai.Client(api_key=api_key, http_options={"timeout": 12000, "retry_options": {"attempts": 1}})
-        cfg = types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3)
-        res = client.models.generate_content(model="gemini-3.8-flash", contents=contents, config=cfg)
-        raw = (res.text or "").strip()
-        if raw.startswith("```"):
-            raw = raw.strip("`").replace("json\n", "", 1).strip()
-        return jsonify(json.loads(raw))
-    except Exception:
-        return jsonify({"direct_answer": "High traffic right now. Please tap retry once.", "evidence": [], "sources": [], "confidence": "Retry"})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
-  
+              
